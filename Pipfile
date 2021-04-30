@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+yfinance = "*"
+pandas = "*"
+numpy = "*"
+notebook = "*"
+matplotlib = "*"
+scikit-learn = "*"
+pystan = "==2.19.1.1"
+pmdarima = "*"
+finta = "*"
+streamlit = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7.9"
