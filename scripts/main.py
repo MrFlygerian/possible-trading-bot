@@ -2,22 +2,15 @@ import streamlit as st
 import numpy as np
 import datetime
 import altair as alt
-import yfinance as yf
-from finta import TA
 import functions
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from multiapp_funcs import MultiApp
 
 from sklearn.model_selection import cross_val_score
 
-app = MultiApp()
-
 # TODO:
 # Add pages to streamlit
-# app.add_app("Home", home.app)
-# app.add_app("Data", data.app)
-# app.add_app("Model", model.app)
+
 
 st.title('This is a streamlit app to be used for trading. This is NOT financial advice.')
 
@@ -59,22 +52,35 @@ tickers = ('TSLA', 'GOOGL',
            'DIS', 'MSFT',
            'MA', 'AAPL')
 
-ticker = st.sidebar.selectbox(
+ticker = st.sidebar.radio(
     "Ticker",
     tickers)
 
 stock_df = functions._get_historical_data(ticker, NUM_DAYS, INTERVAL)
-tick = yf.Ticker(ticker)
+
+stock_df = functions._get_historical_data_mt(tickers, NUM_DAYS, INTERVAL)
+
+# stock_df['adj close'][-60:].plot()
+# st.line_chart(stock_df.groupby('Ticker').close)
+# chart = alt.Chart(stock_df.reset_index()).mark_line().encode(
+#    x=alt.X('Date'),
+#    y=alt.Y('close'),
+#    color=alt.Color('Ticker', scale=alt.Scale(range=['#EA98D2', '#659CCA']))
+# ).configure_facet_cell(
+#     strokeWidth=0.0,
+# )
 
 # Charting
 nearest = alt.selection(type='single', nearest=True, on='mouseover',
                         fields=['Date'], empty='none')
 stock_chart = alt.Chart(stock_df.reset_index()).mark_line().encode(
     x=alt.X('Date:T', axis=alt.Axis(title='')),
-    y=alt.Y('close:Q', axis=alt.Axis(title='',format='$f')),
-    tooltip=[alt.Tooltip('volume'),
-             alt.Tooltip('close:Q', format='$.2f'),
+    y= alt.Y('close:Q', axis=alt.Axis(title='', format='$.2f')),
+    color=alt.Color('Ticker'),
+    tooltip=[alt.Tooltip('Ticker'),
+             alt.Tooltip('close'),
              ],
+    strokeDash='Ticker',
 ).properties(
     width=900,
     height=400
@@ -124,9 +130,3 @@ if st.checkbox('Show data being predicted upon'):
     st.dataframe(pred_df[-1:])
 
 st.write(f'Predicting for {(pred_df[-1:].index + datetime.timedelta(WINDOW)).strftime("%A, %d %b %Y")[0]}')
-
-f'[Link to eToro for {ticker}](https://www.etoro.com/markets/{ticker.lower()})'
-
-if st.button("Make Trade (doesn't really do anything)"):
-    st.write(f'Made trade on {ticker} at {datetime.datetime.today().strftime("%A, %d %b %Y")}'
-             f' set to close on {(pred_df[-1:].index + datetime.timedelta(WINDOW)).strftime("%A, %d %b %Y")[0]} ')
