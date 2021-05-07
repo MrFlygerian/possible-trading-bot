@@ -10,6 +10,7 @@ from multiapp_funcs import MultiApp
 
 from sklearn.model_selection import cross_val_score
 
+st.write('This is a streamlit app to be used for trading. This is NOT financial advice.')
 app = MultiApp()
 
 # TODO:
@@ -18,12 +19,12 @@ app = MultiApp()
 # app.add_app("Data", data.app)
 # app.add_app("Model", model.app)
 
-st.title('This is a streamlit app to be used for trading. This is NOT financial advice.')
+
 
 NUM_DAYS = 4000  # The number of days of historical data to retrieve
 INTERVAL = '1d'  # Sample rate of historical data
 
-WINDOW = st.slider('window', 5, 14, 1)
+WINDOW = st.sidebar.slider('window', 5, 14, 1)
 
 INDICATORS = ['RSI', 'MACD',
               'STOCH', 'ADL',
